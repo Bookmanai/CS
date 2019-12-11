@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class AdminMainMenu extends Container {
-    public JButton addd;
+    public JButton addClothes;
     public JButton addShoes;
     public JButton list;
     public JButton delete;
@@ -14,52 +14,60 @@ public class AdminMainMenu extends Container {
     public AdminMainMenu() {
         setSize(700, 700);
         setLayout(null);
-        addd = new JButton("Add All");
-        addd.setLocation(200, 150);
-        addd.setSize(300, 30);
-        addd.addActionListener(new ActionListener() {
+        addClothes = new JButton("Add Clothes");
+        addClothes.setLocation(200, 150);
+        addClothes.setSize(300, 30);
+        addClothes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Admin.showAddPage();
+                AdminService.showAddClothesPage();
             }
         });
-        add(addd);
+        add(addClothes);
 
 
-//        addShoes = new JButton("Add_Magazine");
-//        addShoes.setLocation(200, 190);
-//        addShoes.setSize(300, 30);
-//        addShoes.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                Admin.showAddShoes;
-//            }
-//        }
-//        );
+        addShoes = new JButton("Add Shoes");
+        addShoes.setLocation(200, 190);
+        addShoes.setSize(300, 30);
+        addShoes.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AdminService.showAddShoesPage();
+            }
+        }
+        );
         add(addShoes);
 
-        list = new JButton("List_Books");
+        list = new JButton("List Items");
         list.setLocation(200, 230);
         list.setSize(300, 30);
         list.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Admin.showListPage();
+                AdminService.showListPage();
             }
         });
         add(list);
 
-        delete= new JButton("Delete_Books");
+        delete= new JButton("Delete Clothes");
         delete.setLocation(200, 270);
         delete.setSize(300, 30);
-
         delete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                AdminService.showDeleteClothesPage();
+            }
+        });
+        add(delete);
 
-                Admin.showDeletePage();
+        delete= new JButton("Delete Shoes");
+        delete.setLocation(200, 310);
+        delete.setSize(300, 30);
+        delete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AdminService.showDeleteShoesPage();
             }
         });
         add(delete);
 
         exit = new JButton("Exit");
-        exit.setBounds(200, 310, 300, 30);
+        exit.setBounds(200, 350, 300, 30);
 
         exit.addActionListener(new ActionListener() {
             @Override

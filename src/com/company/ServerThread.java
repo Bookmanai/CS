@@ -14,7 +14,6 @@ public class ServerThread extends Thread {
     private Socket socket;
     ObjectInputStream inputStream;
     ObjectOutputStream outputStream;
-    public static Long id=null;
 
     public ServerThread(Socket socket, Connection connection) {
         this.socket = socket;
@@ -34,7 +33,7 @@ public class ServerThread extends Thread {
 
                 if (pd.getOperationType().equals("Add_Clothes")) {
                     try {
-                        clothes clothes= pd.getClothes();
+                        Clothes clothes= pd.getClothes();
                         addClothes(clothes);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -42,33 +41,80 @@ public class ServerThread extends Thread {
                 }
                 else if(pd.getOperationType().equals("Add_shoes")){
                     try {
-                        shoes shoes = pd.getShoe().get(0);
+                        Shoes shoes = pd.getShoe();
                         addShoes(shoes);
 
                     }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
-                else if(pd.getOperationType().equals("List_Clothes")){
-                    ArrayList<clothes> clothes = getAllClothes();
-                    PackageData resp = new PackageData();
-                    resp.setCloth(clothes);
-                    outputStream.writeObject(resp);
+                else if(pd.getOperationType().equals("Buy_Clothes")) {
+                    try {
+                        buyClothes(pd.getId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                else if(pd.getOperationType().equals("List_Shoes")){
-                    ArrayList<shoes> shoe = getAllShoes();
-                    PackageData pd2=new PackageData();
-                    pd2.setShoe(shoe);
-                    outputStream.writeObject(pd2);
+                else if(pd.getOperationType().equals("Buy_Shoes")) {
+                    try {
+                        buyShoes(pd.getId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(pd.getOperationType().equals("List_Clothes")) {
+                    try {
+                        ArrayList<Clothes> clothes = getAllClothes();
+                        PackageData resp = new PackageData();
+                        resp.setCloth(clothes);
+                        outputStream.writeObject(resp);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(pd.getOperationType().equals("List_Shoes")) {
+                    try {
+                        ArrayList<Shoes> shoe = getAllShoes();
+                        PackageData pd2 = new PackageData();
+                        pd2.setShoes(shoe);
+                        outputStream.writeObject(pd2);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 else if(pd.getOperationType().equals("Delete_Clothes")){
-                    Long id=pd.getId();
-                    deleteclothesToDB(id);
+                    try {
+                        Integer id = pd.getId();
+                        deleteClothesToDB(id);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(pd.getOperationType().equals("Delete_Shoes")){
+                    try {
+                        Integer id = pd.getId();
+                        deleteShoesToDB(id);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 else if(pd.getOperationType().equals("Add_User")){
                     try {
-                        UserData user = pd.getUser();
+                        User user = pd.getUser();
                         addUser(user);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(pd.getOperationType().equals("Sign_in")){
+                    try {
+                        User user = pd.getUser();
+                        user = signIn(user);
+                        PackageData resp = new PackageData();
+                        resp.setUser(user);
+                        outputStream.writeObject(resp);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -85,28 +131,50 @@ public class ServerThread extends Thread {
     }
 
 
-    public void addShoes(shoes shoes){
+    public User signIn(User user){
+        User userData = null;
         try {
-            id=id+1;
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO shoes (id, name,model,price,sold,count,size,genre) VALUES(?, ?, ?,?,?,?,?,?)");
-            ps.setLong(1, shoes.getId());
-            ps.setString(2,shoes.getName());
+            PreparedStatement ps = connection.prepareStatement("SELECT * from users WHERE login = ? and password = ?");
+            ps.setString(1,user.getLogin());
+            ps.setString(2,user.getPassword());
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Integer id = rs.getInt("id");
+                String login = rs.getString("login");
+                String password = rs.getString("password");
+                String address = rs.getString("address");
+                String phone = rs.getString("phone");
+                boolean isAdmin = rs.getBoolean("isAdmin");
+                userData = new User(id, login, password, address, phone, isAdmin);
+            }
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userData;
+    }
+
+
+    public void addShoes(Shoes shoes){
+        try {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO shoes (id, name,category,price,amount,model,size) VALUES(NULL, ?, ?,?,?,?,?)");
+            ps.setString(1,shoes.getName());
             ps.setInt(3,shoes.getPrice());
-            ps.setInt(4, shoes.getSold());
-            ps.setString(8,shoes.getGenre());
-            ps.setInt(5,shoes.getCount());
-            ps.setString(6,shoes.getModel());
-            ps.setInt(7, shoes.getSize());
+            ps.setString(2,shoes.getCategory());
+            ps.setInt(4,shoes.getAmount());
+            ps.setString(5,shoes.getModel());
+            ps.setInt(6, shoes.getSize());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public void addUser(UserData user){
+    public void addUser(User user){
         try {
 
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO user (login, password,address,telephoneNumber) VALUES(?,?,?,?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO users (id,login, password,address,phone,isAdmin) VALUES(NULL,?,?,?,?,0)");
             ps.setString(1, user.getLogin());
             ps.setString(2,user.getPassword());
             ps.setString(3,user.getAddress());
@@ -119,17 +187,15 @@ public class ServerThread extends Thread {
     }
 
 
-    public void addClothes(clothes  clothes){
+    public void addClothes(Clothes clothes){
         try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO clothes (id, name,model,price,sold,count,size,genre) VALUES(NULL, ?, ?,?,?,?,?,?)");
-            ps.setLong(1, clothes.getId());
-            ps.setString(2,clothes.getName());
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO clothes (id, name,category,price,amount,model,size) VALUES(NULL, ?, ?,?,?,?,?)");
+            ps.setString(1,clothes.getName());
             ps.setInt(3,clothes.getPrice());
-            ps.setInt(4, clothes.getSold());
-            ps.setString(8,clothes.getGenre());
-            ps.setInt(5,clothes.getCount());
-            ps.setString(6, clothes.getModel());
-            ps.setString(7,clothes.getSize());
+            ps.setString(2,clothes.getCategory());
+            ps.setInt(4,clothes.getAmount());
+            ps.setString(5,clothes.getModel());
+            ps.setString(6, clothes.getSize());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
@@ -137,8 +203,8 @@ public class ServerThread extends Thread {
         }
     }
 
-    public ArrayList<clothes> getAllClothes(){
-        ArrayList<clothes> list = new ArrayList<>();
+    public ArrayList<Clothes> getAllClothes(){
+        ArrayList<Clothes> list = new ArrayList<>();
 
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT * from clothes");
@@ -146,20 +212,15 @@ public class ServerThread extends Thread {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
-                Long id = rs.getLong("id");
+                Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                int sold = rs.getInt("sold");
                 String size = rs.getString("size");
-                String genre=rs.getString("genre");
+                String category=rs.getString("category");
                 String model =rs.getString("model");
                 int price=rs.getInt("price");
-                int count= rs.getInt("count");
+                int amount= rs.getInt("amount");
 
-
-
-
-
-                list.add(new clothes(id,name,"clothes",sold,size,genre, count,price,model, price,count));
+                list.add(new Clothes(id,name,category,price,amount, model, size));
             }
             ps.close();
         } catch (SQLException e) {
@@ -168,8 +229,8 @@ public class ServerThread extends Thread {
         return list;
     }
 
-    public ArrayList<shoes> getAllShoes(){
-        ArrayList<shoes> list = new ArrayList<>();
+    public ArrayList<Shoes> getAllShoes(){
+        ArrayList<Shoes> list = new ArrayList<>();
 
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT * from shoes");
@@ -177,17 +238,16 @@ public class ServerThread extends Thread {
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
-                Long id = rs.getLong("id");
+                Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                int sold = rs.getInt("sold");
                 int size = rs.getInt("size");
-                String genre=rs.getString("genre");
+                String category=rs.getString("category");
                 String model =rs.getString("model");
                 int price=rs.getInt("price");
-                int count= rs.getInt("count");
+                int amount= rs.getInt("amount");
 
 
-                list.add(new shoes(id,"shoes", genre,name, price, sold, count,size, model ));
+                list.add(new Shoes(id,name,category,price,amount, size,model));
             }
             ps.close();
         } catch (SQLException e) {
@@ -196,20 +256,39 @@ public class ServerThread extends Thread {
           return list;
     }
 
-
-    public void deleteclothesToDB(Long id){
+    public void buyClothes(Integer id){
         try{
-            PreparedStatement ps=connection.prepareStatement("DELETE FROM clothes WHERE id=?");
-            ps.setLong(1,id);
+            PreparedStatement ps=connection.prepareStatement("UPDATE clothes SET amount= amount-1 WHERE id=?");
+            ps.setInt(1,id);
             int rows= ps.executeUpdate();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void deleteshoesToDB(Long id){
+
+    public void buyShoes(Integer id){
+        try{
+            PreparedStatement ps=connection.prepareStatement("UPDATE shoes SET amount= amount-1 WHERE id=?");
+            ps.setInt(1,id);
+            int rows= ps.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void deleteClothesToDB(Integer id){
+        try{
+            PreparedStatement ps=connection.prepareStatement("DELETE FROM clothes WHERE id=?");
+            ps.setInt(1,id);
+            int rows= ps.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteShoesToDB(Integer id){
         try{
             PreparedStatement ps=connection.prepareStatement("DELETE FROM shoes WHERE id=?");
-            ps.setLong(1,id);
+            ps.setInt(1,id);
             int rows= ps.executeUpdate();
         }catch (Exception e){
             e.printStackTrace();

@@ -17,7 +17,6 @@ public class Server {
                 System.out.println("waiting for client");
                 Socket socket = ss.accept();
                 System.out.println("new client connected");
-
                 ServerThread sth = new ServerThread(socket,connection);
                 sth.start();
             }
@@ -32,9 +31,9 @@ public class Server {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection
-                    ("jdbc:mysql://localhost:3306/nbk_project?serverTimezone=UTC",
+                    ("jdbc:mysql://localhost:3306/CS",
                             "root",
-                            "");
+                            "mazaser1805");
             System.out.println("Connected to DB");
         } catch (Exception e) {
             e.printStackTrace();

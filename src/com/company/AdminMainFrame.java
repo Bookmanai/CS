@@ -2,10 +2,11 @@ package com.company;
 import javax.swing.*;
 
 public class AdminMainFrame extends JFrame {
-    public AdminAddPage addClothes;
-//    public AdminAddMagazine addShoes;
-    public AdminListPage listClothes;
-    public AdminDeletePage deletePage;
+    public AddClothesPage addClothes;
+    public AddShoesPage addShoesPage;
+    public ListItemsPage listItems;
+    public DeleteClothesPage deletePage;
+    public DeleteShoesPage deleteShoesPage;
     public AdminMainMenu menu;
     public AdminMainFrame(){
         setTitle("ADMIN");
@@ -14,32 +15,35 @@ public class AdminMainFrame extends JFrame {
         setLayout(null);
         setLocationRelativeTo(null);
 
-
         menu = new AdminMainMenu();
         menu.setLocation(0,0);
         menu.setVisible(true);
         add(menu);
 
-        addClothes = new AdminAddPage();
+        addClothes = new AddClothesPage();
         addClothes.setLocation(0,0);
         addClothes.setVisible(false);
         add(addClothes);
 
-//        addShoes = new AdminAddMagazine();
-//        addShoes.setLocation(0,0);
-//        addShoes.setVisible(false);
-//        add(addShoes);
+        addShoesPage = new AddShoesPage();
+        addShoesPage.setLocation(0,0);
+        addShoesPage.setVisible(false);
+        add(addShoesPage);
 
-        listClothes = new AdminListPage();
-        listClothes.setLocation(0,0);
-        listClothes.setVisible(false);
-        add(listClothes);
+        listItems = new ListItemsPage();
+        listItems.setLocation(0,0);
+        listItems.setVisible(false);
+        add(listItems);
 
-        deletePage=new AdminDeletePage();
+        deletePage=new DeleteClothesPage();
         deletePage.setLocation(0,0);
-
         deletePage.setVisible(false);
         add(deletePage);
+
+        deleteShoesPage=new DeleteShoesPage();
+        deleteShoesPage.setLocation(0,0);
+        deleteShoesPage.setVisible(false);
+        add(deleteShoesPage);
 
         repaint();
     }

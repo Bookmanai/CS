@@ -5,29 +5,17 @@ import java.util.ArrayList;
 
 public class PackageData implements Serializable {
     String operationType;
-    ArrayList<shoes> shoe;
-    ArrayList<clothes> cloth;
-    UserData user;
-    ArrayList<UserData> users;
-    shoes shoes;
-    clothes clothes;
-    Long id;
+    ArrayList<Shoes> shoes;
+    ArrayList<Clothes> cloth;
+    User user;
+    ArrayList<User> users;
+    Shoes shoe;
+    Clothes clothes;
+    Integer id;
 
     public PackageData() {
     }
 
-    public PackageData(String operationType, ArrayList<com.company.shoes> shoe, ArrayList<com.company.clothes> cloth, UserData user, ArrayList<UserData> users, com.company.shoes shoes, com.company.clothes clothes, Long id) {
-
-        this.operationType = operationType;
-        this.shoe = shoe;
-        this.cloth = cloth;
-        this.user = user;
-        this.users = users;
-        this.shoes = shoes;
-        this.clothes = clothes;
-        this.id = id;
-    }
-//
 
     public String getOperationType() {
         return operationType;
@@ -37,59 +25,59 @@ public class PackageData implements Serializable {
         this.operationType = operationType;
     }
 
-    public ArrayList<shoes> getShoe() {
-        return shoe;
-    }
-
-    public void setShoe(ArrayList<com.company.shoes> shoe) {
-        this.shoe = shoe;
-    }
-
-    public ArrayList<com.company.clothes> getCloth() {
-        return cloth;
-    }
-
-    public void setCloth(ArrayList<com.company.clothes> cloth) {
-        this.cloth = cloth;
-    }
-
-    public com.company.shoes getShoes() {
+    public ArrayList<Shoes> getShoes() {
         return shoes;
     }
 
-    public void setShoes(com.company.shoes shoes) {
+    public void setShoes(ArrayList<Shoes> shoes) {
         this.shoes = shoes;
     }
 
-    public com.company.clothes getClothes() {
+    public ArrayList<Clothes> getCloth() {
+        return cloth;
+    }
+
+    public void setCloth(ArrayList<Clothes> cloth) {
+        this.cloth = cloth;
+    }
+
+    public Shoes getShoe() {
+        return shoe;
+    }
+
+    public void setShoe(Shoes shoes) {
+        this.shoe = shoes;
+    }
+
+    public Clothes getClothes() {
         return clothes;
     }
 
-    public void setClothes(com.company.clothes clothes) {
+    public void setClothes(Clothes clothes) {
         this.clothes = clothes;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public UserData getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserData user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public ArrayList<UserData> getUsers() {
+    public ArrayList<User> getUsers() {
         return users;
     }
 
-    public void setUsers(ArrayList<UserData> users) {
+    public void setUsers(ArrayList<User> users) {
         this.users = users;
     }
 
@@ -103,8 +91,8 @@ public class PackageData implements Serializable {
                 ", cloth=" + cloth +
                 ", user=" + user +
                 ", users=" + users +
-                ", shoes=" + shoes +
-                ", clothes=" + clothes +
+                ", Shoes=" + shoes +
+                ", Clothes=" + clothes +
                 ", id=" + id +
                 '}';
     }
